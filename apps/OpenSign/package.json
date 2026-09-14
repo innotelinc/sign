@@ -117,7 +117,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.2",
-    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-react": "^8.0.1",
     "@babel/runtime-corejs2": "^7.29.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
