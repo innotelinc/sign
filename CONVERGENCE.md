@@ -10,7 +10,7 @@
 
 `sign-platform` (the OpenSign fork, branded **Signara by Innotel**, live at
 `sign.innotel.us`) is a stopgap. `signara` (`innotelinc/signara`,
-`/usr/src/projects/complete/signara-trust-platform`) is the strategic platform and
+`/usr/src/projects/complete/1-primary/signara`) is the strategic platform and
 becomes the **single** e-signature product. Storage moves to **Onyx**
 (`innotelinc/onyx-oss-platform` `onyx-objectstore`), honoring the federation rule:
 *Cerulean owns trust, Onyx owns storage, Magnate owns revenue, NPM Edge owns the edge.*
@@ -120,7 +120,7 @@ Notes:
    `:9000` itself is taken by Authentik on this host). Static S3 credentials
    generated and stored in onyx `.env`; bucket `signara-documents` created;
    Basic-auth REST round-trip green. Smoke test saved at
-   `signara-trust-platform/scripts/onyx-objectstore-smoke.sh`.
+   `1-primary/signara/scripts/onyx-objectstore-smoke.sh`.
 1. **[BLOCKED on onyx S3-gateway milestone]** SDK-grade SigV4 + presigned URLs.
    Track upstream; until then onyx serves batch/ETL workloads only.
 2. **Wire signara** → `S3_ENDPOINT` at Onyx (compose override; signara's compose

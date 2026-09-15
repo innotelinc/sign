@@ -1,5 +1,8 @@
 # Sign Platform
 
+[![CI](https://github.com/innotelinc/sign/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/sign/actions/workflows/ci.yml)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-brightgreen.svg)](LICENSE)
+
 Self-hosted OpenSign deployment for `sign.innotel.us`, using Docker Compose and an external Nginx Proxy Manager instance.
 
 ## Features
@@ -19,6 +22,15 @@ Self-hosted OpenSign deployment for `sign.innotel.us`, using Docker Compose and 
 - Firewall access from Nginx Proxy Manager to TCP ports `3000` and `8080` on the OpenSign host
 - MongoDB 7.0 image (`mongo:7.0`). The image is pinned because `mongo:latest` (MongoDB 8.x) fails to start on Linux kernels 6.19+ (known incompatibility, [SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)) and requires AVX CPU support
 - Internet access on the OpenSign host to download npm dependencies while building the `server` and `client` images
+
+## Why Sign Platform
+
+| Problem | Sign Platform answer |
+| --- | --- |
+| Signing runs on somebody else's servers | Self-hosted OpenSign stack on your own host, behind your own edge |
+| Documents stranded in a vendor's object store | `USE_LOCAL=true` on a persistent `opensign-files` volume, with the ONYX cutover planned |
+| Identity as a second login | NPM-fronted and Cerulean/Authentik-first, like the rest of the portfolio |
+| An unverifiable migration | A conformant, restorable stopgap while Signara reaches parity (`CONVERGENCE.md`) |
 
 ## Quick start
 
@@ -105,6 +117,24 @@ The named volumes `data-volume` and `opensign-files` contain application data. D
 ## Upstream project
 
 This project packages deployment configuration around [OpenSign](https://github.com/OpenSignLabs/OpenSign), an AGPL-3.0 licensed open-source document signing platform. OpenSign source, trademarks, and licensing remain with OpenSignLabs.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [docs/stack.md](docs/stack.md) | Sign Platform's role in the Innotel Platform Stack (DocumentOps) |
+| [CONVERGENCE.md](CONVERGENCE.md) | The Signara migration plan that retires this stack |
+| [NGINX_PROXY_MANAGER.md](NGINX_PROXY_MANAGER.md) | Complete proxy, DNS, and firewall setup |
+
+## 🏛️ Platform stack
+
+Sign Platform is the ecosystem's **DocumentOps** stopgap in the
+[**Innotel Platform Stack**](https://github.com/innotelinc/innotel-platform-stack) —
+the canonical single-responsibility architecture where Authentik owns identity,
+Cerulean Vault owns secrets, Cerulean owns trust, ONYX owns storage, Magnate owns
+revenue, NPM Edge owns the edge, and Signara owns the ecosystem's e-signature
+future. See [docs/stack.md](docs/stack.md) for this platform's owns/consumes
+boundaries.
 
 ## License
 
