@@ -1,6 +1,20 @@
 # sign-platform → signara Convergence Plan
 
-**Status:** Draft v1 — 2026-09-09
+**Status:** v1 — 2026-09-09 (historical record)
+**Superseded for forward planning by:** `1-primary/signara/docs/Roadmap.md` (Plan v2,
+2026-09-15). This document keeps the data mapping tables (§4), the storage
+reasoning (§5) and the phase history; the roadmap owns what happens next, because
+two of this plan's premises no longer hold:
+
+- **§2's "stable fallback" no longer exists** — the `sign-platform` host
+  (`192.168.1.11`) is unreachable and holds nothing that this host can see. The
+  P0 freeze and the dual-read part of P4 are therefore moot, not pending.
+- **The legacy data may not exist anywhere.** The nightly backup script lived
+  only on `.11` (`/usr/local/bin/sign-platform-backup.sh`), was never committed
+  here, and no archive of it exists on this host — so its destination is
+  unrecorded and the P3 ETL is **conditional on recovering a source**. The
+  decision tree is in the roadmap's §6.
+
 **Owner:** Innotel
 **Repo:** `innotelinc/sign-platform` (this document drives its retirement)
 
@@ -190,14 +204,20 @@ Notes:
       origin can call `api.signara.innotel.us`. Verified: `200` on `/`, `/login`,
       `/dashboard` with a chain-valid wildcard certificate.
 - [ ] Recover the historical data — the P3 ETL needs the Mongo dump **and** the
-      `opensign-files` volume from `.11`. Neither is reachable from this host, so
-      first establish whether that box still exists; if it does not, the only
-      history left is whatever the nightly backup script pushed elsewhere.
+      `opensign-files` volume from `.11`. Re-confirmed 2026-09-15: no ICMP and
+      nothing on `:3000`, `:8080`, `:27017`; no `sign-platform*` container or
+      volume on this host. Timebox the search for an off-host archive, then
+      either write the ETL against it or record the write-off (roadmap §6).
 - [ ] Write the P3 ETL script (`scripts/migrate-sign-platform/`) in the signara
       repo: Mongo reader → Prisma writer → Onyx uploader + verification report
-      (ETL can use onyx Basic-auth REST today).
-- [ ] Track/land the onyx S3-gateway (SigV4 + presigned URLs) milestone.
+      (ETL can use onyx Basic-auth REST today). **Only if §6 finds a source.**
+- [ ] Track/land the onyx S3-gateway (SigV4 + presigned URLs) milestone —
+      re-confirmed 2026-09-15 as still open (`services/objectstore/http.go`).
 - [ ] Define the signara parity checklist (P1) as GitHub issues in `innotelinc/signara`.
+      Draft inventory now lives in `1-primary/signara/docs/Roadmap.md` §W2.
+- [ ] Add `signara/scripts/verify-sso.py` (roadmap W1): the estate's other three
+      zones each got a committed end-to-end sign-in test on 2026-09-15; signara is
+      the only one without.
 
 ---
 *Companion docs: signara `docs/Architecture.md`, `docs/Deployment.md`,
