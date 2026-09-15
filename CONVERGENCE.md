@@ -20,8 +20,13 @@ phase plan to retire `sign-platform` with zero data loss.
 
 ## 2. Current state (2026-09-09)
 
-### sign-platform (live, stable fallback)
-- Stack: Parse Server (Node 22) + MongoDB 7 + Vite/React client, docker compose on
+### sign-platform (RETIRED — host unreachable since 2026-09-15)
+- **[2026-09-15] `192.168.1.11` no longer answers**: no ICMP, nothing on `:3000`
+  (client), `:8080` (API) or `:27017` (Mongo), and no containers named
+  `sign-platform*` are running on this host. The "stable fallback" is gone, so the
+  edge was repointed at signara (§6, P4) — a fallback that cannot be reached is
+  worse than no fallback, because it silently 502s the public URL.
+- Stack (as designed): Parse Server (Node 22) + MongoDB 7 + Vite/React client, docker compose on
   `192.168.1.11` at `/usr/src/sign-platform` (project `sign-platform`).
 - Deployed via `https://sign.innotel.us` → nginx/openresty edge → client `:3000`,
   API `/api/app` → server `:8080`.
@@ -35,7 +40,7 @@ phase plan to retire `sign-platform` with zero data loss.
 - Verified: full API-level E2E sign test passed (upload → signPdf → digital
   signature `/ByteRange` → DocumentHash → signed completion certificate).
 
-### signara (target, currently stopped)
+### signara (target, RUNNING — serves `sign.innotel.us` as of 2026-09-15)
 - Stack: Next.js web (`apps/web`) + NestJS API (`apps/api`) + PostgreSQL via Prisma
   (`packages/database`) + Redis + Meilisearch + Authentik-native SSO, AGPL-3.0.
 - Storage: `apps/api/src/storage/minio.service.ts` — MinIO client against any
@@ -44,9 +49,13 @@ phase plan to retire `sign-platform` with zero data loss.
 - Core Prisma models: `User, Organization, Membership, Workspace, Document,
   DocumentVersion, Template, TemplateField, SigningRequest, Signer, Signature,
   SignatureEvent, WorkflowRule, SigningCertificate, AuditLog, Notification, Billing…`
-- Compose project `signara` currently **down** (stopped 2026-09-08; restart with
-  `docker compose -p signara -f docker-compose.prod.yml -f
-  docker-compose.override.prod.yml up -d`).
+- Compose project `signara` is **up and healthy** (api, frontend, postgres, redis,
+  minio, meilisearch; restart with `docker compose -p signara -f
+  docker-compose.prod.yml -f docker-compose.override.prod.yml up -d`).
+- Edge (NPM): `sign.innotel.us` → `192.168.1.46:3000` (the next.js frontend), the
+  legacy `/api/` location that pointed at the dead Parse host removed;
+  `app.`/`api.`/`auth.`/`storage.`
+  `signara.innotel.us` remain as the branded aliases.
 
 ### onyx (storage provider)
 - `services/objectstore` (`onyx-objectstore`): **S3-compatible** Go service,
@@ -145,7 +154,7 @@ Notes:
 | P1 — Parity | signara MVP parity checklist: send-for-signature envelope, guest signing flow, templates, completion email, audit trail/certificate, Signara branding, Authentik SSO, SMTP | feature checklist passes on staging |
 | P2 — Onyx | signara storage = onyx-objectstore (dev → prod). **Status: partially blocked** — onyx v0.1 lacks SigV4/presigned URLs (S3-gateway milestone); object store itself deployed and REST-verified | round-trip tests green; presigned public URLs work |
 | P3 — Migration | ETL: Mongo → Postgres, files → Onyx legacy prefix | counts reconcile; spot-check hashes; pilot tenant reads own history in signara |
-| P4 — Cutover | point `sign.innotel.us` at signara; sign-platform scaled down but imageable for 30 days | signers sign successfully on signara |
+| P4 — Cutover | point `sign.innotel.us` at signara; sign-platform scaled down but imageable for 30 days. **Status: edge cut over 2026-09-15** (public URL now serves signara; CORS origin `https://sign.innotel.us` added to the API). sign-platform was never drained first — its host disappeared, so there is no rollback target | signers sign successfully on signara |
 | P5 — Retire | sign-platform archived; repo marked frozen; volumes kept until backup retention elapses | sign-platform containers removed |
 
 ## 7. Risks & mitigations
@@ -175,6 +184,15 @@ Notes:
 - [x] Stand up `onyx-objectstore` (2026-09-09): host port 2090, credentials in
       onyx `.env`, `signara-documents` bucket created, REST round-trip green.
       **SigV4/presigned gap documented above (P2 blocker).**
+- [x] Cut `sign.innotel.us` over to signara (2026-09-15): NPM host 131 retargeted
+      from the dead `192.168.1.11:3000` to `192.168.1.46:3000`, legacy `/api/`
+      location dropped, `CORS_ORIGINS=https://sign.innotel.us` added so the browser
+      origin can call `api.signara.innotel.us`. Verified: `200` on `/`, `/login`,
+      `/dashboard` with a chain-valid wildcard certificate.
+- [ ] Recover the historical data — the P3 ETL needs the Mongo dump **and** the
+      `opensign-files` volume from `.11`. Neither is reachable from this host, so
+      first establish whether that box still exists; if it does not, the only
+      history left is whatever the nightly backup script pushed elsewhere.
 - [ ] Write the P3 ETL script (`scripts/migrate-sign-platform/`) in the signara
       repo: Mongo reader → Prisma writer → Onyx uploader + verification report
       (ETL can use onyx Basic-auth REST today).
