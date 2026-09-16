@@ -1,6 +1,6 @@
 # Sign Platform
 
-[![CI](https://github.com/innotelinc/sign-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/sign-platform/actions/workflows/ci.yml)
+[![CI](https://github.com/innotelinc/sign/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/sign/actions/workflows/ci.yml)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-brightgreen.svg)](LICENSE)
 
 Self-hosted OpenSign deployment for the Innotel stack, using Docker Compose and an external Nginx Proxy Manager instance.

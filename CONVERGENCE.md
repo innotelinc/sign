@@ -18,7 +18,7 @@ two of this plan's premises no longer hold:
   written, and the launch note has to say so.
 
 **Owner:** Innotel
-**Repo:** `innotelinc/sign-platform` (this document drives its retirement)
+**Repo:** `innotelinc/sign` (renamed from `sign-platform`; this document drives its retirement)
 
 ---
 
