@@ -3,62 +3,400 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign Platform — E-Signature for the Innotel platform</title>
-  <meta name="description" content="Sign Platform — the self-hosted e-signature deployment behind sign.innotel.us, riding the Innotel platform stack.">
-  <meta property="og:title" content="Sign Platform — E-Signature for the Innotel platform">
+  <title>Sign Platform — Open-source e-signature, self-hosted</title>
+  <meta name="description" content="Sign Platform is the Innotel stack's OpenSign-based signing service: documents built from source, stored on your own volumes, fronted by your own edge — converging into Signara.">
+  <meta property="og:title" content="Sign Platform — Open-source e-signature, self-hosted">
+  <meta property="og:description" content="Self-hosted OpenSign: unlimited signing, local document storage, MongoDB pinned for reliability, Authentik-first identity — the DocumentOps stopgap converging into Signara.">
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2360a5fa'/%3E%3Cpath fill='%230b0d10' d='M18 44c6-2 10-6 12-12l3-9 3 9c2 6 6 10 12 12-6 2-10 6-12 12l-3 9-3-9c-2-6-6-10-12-12z'/%3E%3C/svg%3E">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0b0d10;
-      --surface: #181c22;
-      --border: #262c35;
-      --text: #f4f7fb;
-      --text-muted: #a8b2bf;
-      --accent: #60a5fa;
+      --p-bg: #0b0d10;
+      --p-bg-elevated: #14181e;
+      --p-border: #262c35;
+      --p-text: #f4f7fb;
+      --p-text-secondary: #a8b2bf;
+      --p-text-muted: #727d8c;
+      --p-accent: #60a5fa;
+      --p-accent-hover: #93c5fd;
+      --p-accent-tint: rgba(96, 165, 250, 0.12);
+      --p-success: #3ddc84;
+      --p-warning: #f5b544;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--p-bg);
+      color: var(--p-text);
       font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    main { max-width: 720px; margin: 0 auto; padding: 96px 24px 64px; }
-    .logo {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 56px; height: 56px; border-radius: 14px;
-      background: var(--accent); color: var(--bg); font-size: 26px; font-weight: 700;
+    a { color: var(--p-accent); text-decoration: none; }
+    a:hover { color: var(--p-accent-hover); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---- Top bar --------------------------------------------------------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(11, 13, 16, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--p-border);
     }
-    h1 { font-size: 40px; margin: 28px 0 8px; letter-spacing: -0.02em; }
-    p.sub { color: var(--text-muted); font-size: 18px; margin: 0 0 40px; }
-    .links { display: flex; gap: 16px; flex-wrap: wrap; }
-    .links a {
-      display: inline-block; padding: 10px 18px; border-radius: 8px;
-      border: 1px solid var(--border); background: var(--surface);
-      color: var(--text); font-weight: 500;
+    .topbar-inner { display: flex; align-items: center; gap: 20px; height: 60px; }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 650; letter-spacing: 0.04em;
+      color: var(--p-text);
     }
-    .links a:hover { border-color: var(--accent); text-decoration: none; }
-    footer { color: var(--text-muted); margin-top: 72px; font-size: 14px; }
+    .brand:hover { color: var(--p-text); }
+    .brand .mark {
+      display: grid; place-items: center;
+      width: 26px; height: 26px; border-radius: 8px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      font-size: 15px;
+    }
+    .brand .dot { color: var(--p-accent); }
+    .topbar nav { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    .topbar nav a {
+      color: var(--p-text-secondary);
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: color .15s var(--ease), background .15s var(--ease);
+    }
+    .topbar nav a:hover { color: var(--p-text); background: var(--p-accent-tint); }
+    .topbar .gh {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-left: 8px;
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 7px 14px;
+      color: var(--p-text);
+      font-size: 14px;
+      transition: border-color .15s var(--ease), background .15s var(--ease);
+    }
+    .topbar .gh:hover { border-color: var(--p-accent); background: var(--p-accent-tint); color: var(--p-text); }
+
+    /* ---- Hero ------------------------------------------------------------ */
+    .hero { position: relative; overflow: hidden; padding: 96px 0 72px; }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(600px 320px at 70% -10%, rgba(96, 165, 250, 0.14), transparent 70%),
+        radial-gradient(500px 300px at 15% 110%, rgba(96, 165, 250, 0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--p-accent-hover);
+      background: var(--p-accent-tint);
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      border-radius: 999px;
+      padding: 5px 14px;
+      margin: 0 0 24px;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px;
+      font-weight: 700;
+    }
+    h1 .accent { color: var(--p-accent); }
+    .lede {
+      font-size: 1.125rem;
+      color: var(--p-text-secondary);
+      max-width: 640px;
+      margin: 0 0 32px;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: var(--radius-md);
+      padding: 11px 20px;
+      font-size: 15px; font-weight: 550;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background .15s var(--ease), border-color .15s var(--ease), transform .15s var(--ease);
+    }
+    .btn-primary { background: var(--p-accent); color: #071018; font-weight: 600; }
+    .btn-primary:hover { background: var(--p-accent-hover); color: #071018; }
+    .btn-secondary { border-color: var(--p-border); color: var(--p-text); background: transparent; }
+    .btn-secondary:hover { border-color: var(--p-accent); background: var(--p-accent-tint); color: var(--p-text); }
+    .quickstart {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      max-width: 680px;
+      font-size: 13.5px;
+    }
+    .quickstart code { color: var(--p-text); white-space: nowrap; overflow-x: auto; }
+    .quickstart code .c { color: var(--p-text-muted); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; max-width: 720px; }
+    .stat {
+      border: 1px solid var(--p-border);
+      background: var(--p-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .stat b { font-size: 15px; }
+    .stat span { color: var(--p-text-secondary); font-size: 12.5px; }
+
+    /* ---- Sections --------------------------------------------------------- */
+    section { padding: 72px 0; border-top: 1px solid var(--p-border); }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.1rem); letter-spacing: -0.015em; margin: 0 0 10px; }
+    h2 .accent { color: var(--p-accent); }
+    .section-sub { color: var(--p-text-secondary); margin: 0 0 34px; max-width: 640px; }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card {
+      border: 1px solid var(--p-border);
+      background: var(--p-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      transition: border-color .15s var(--ease);
+    }
+    .card:hover { border-color: var(--p-accent); }
+    .card h3 { margin: 0; font-size: 15.5px; }
+    .card p { margin: 6px 0 0; color: var(--p-text-secondary); font-size: 14px; }
+    .card .icon {
+      display: inline-grid; place-items: center;
+      width: 34px; height: 34px;
+      border-radius: var(--radius-md);
+      background: var(--p-accent-tint);
+      margin-bottom: 14px;
+      font-size: 16px;
+    }
+
+    /* ---- Surfaces table -------------------------------------------------- */
+    .surfaces { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .surface {
+      display: flex; flex-direction: column; gap: 2px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      transition: border-color .15s var(--ease);
+    }
+    .surface:hover { border-color: var(--p-accent); }
+    .surface b { font-size: 14.5px; }
+    .surface small { color: var(--p-text-secondary); font-size: 12.5px; }
+    .surface .live {
+      margin-left: auto;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--p-success);
+      border: 1px solid rgba(61, 220, 132, 0.3);
+      border-radius: 999px;
+      padding: 1px 8px;
+    }
+    .surface .plan {
+      margin-left: auto;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--p-warning);
+      border: 1px solid rgba(245, 181, 68, 0.3);
+      border-radius: 999px;
+      padding: 1px 8px;
+    }
+
+    /* ---- Split / code ---------------------------------------------------- */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+    @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+    pre.terminal {
+      margin: 0;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.75;
+      overflow-x: auto;
+      color: var(--p-text-secondary);
+    }
+    pre.terminal .p { color: var(--p-accent); }
+    pre.terminal .o { color: var(--p-text); }
+    pre.terminal .ok { color: var(--p-success); }
+    pre.terminal .cmt { color: var(--p-text-muted); }
+
+    /* ---- Roadmap --------------------------------------------------------- */
+    .roadmap { display: grid; gap: 12px; }
+    .mile {
+      display: flex; align-items: baseline; gap: 16px;
+      border: 1px solid var(--p-border);
+      background: var(--p-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+    .mile .tag {
+      flex: 0 0 150px;
+      font-weight: 650; font-size: 14px;
+      color: var(--p-text);
+    }
+    .mile .tag em {
+      font-style: normal; color: var(--p-accent);
+      display: block; font-size: 12px; font-weight: 500;
+    }
+    .mile p { margin: 0; color: var(--p-text-secondary); font-size: 14px; }
+    .mile .state {
+      margin-left: auto; flex: 0 0 auto;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      border-radius: 999px; padding: 2px 10px;
+    }
+    .mile .state.done { color: var(--p-success); border: 1px solid rgba(61, 220, 132, 0.3); }
+    .mile .state.next { color: var(--p-warning); border: 1px solid rgba(245, 181, 68, 0.3); }
+    .mile .state.later { color: var(--p-text-muted); border: 1px solid var(--p-border); }
+
+    /* ---- Footer ----------------------------------------------------------- */
+    footer {
+      border-top: 1px solid var(--p-border);
+      padding: 32px 0 40px;
+      color: var(--p-text-muted);
+      font-size: 13.5px;
+    }
+    .foot-inner { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+    footer a { color: var(--p-text-secondary); }
+    footer a:hover { color: var(--p-text); }
+    .foot-links { display: flex; gap: 18px; flex-wrap: wrap; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="logo">✒</div>
-    <h1>Sign Platform</h1>
-    <p class="sub">Self-hosted e-signature behind <code>sign.innotel.us</code> — OpenSign, MongoDB, and Nginx Proxy Manager, riding the Innotel platform stack.</p>
-    <div class="links">
-      <a href="https://sign.innotel.us">Open the app</a>
-      <a href="https://github.com/innotelinc/sign">Source code</a>
-      <a href="https://github.com/innotelinc/sign/blob/main/CONVERGENCE.md">Convergence plan</a>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#">
+        <span class="mark" aria-hidden="true">✒</span>
+        Sign&nbsp;Platform<span class="dot">.</span>
+      </a>
+      <nav aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#stack">Stack</a>
+        <a href="#surfaces">Surfaces</a>
+        <a href="#convergence">Convergence</a>
+        <a class="gh" href="https://github.com/innotelinc/sign-platform">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </nav>
     </div>
-    <footer>Part of the Innotel platform stack — DocumentOps stopgap; Signara is the strategic e-signature platform.</footer>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="wrap hero-inner">
+        <p class="kicker">DocumentOps · OpenSign, built from source</p>
+        <h1>Every signature stays on <span class="accent">your infrastructure</span>.</h1>
+        <p class="lede">Sign Platform is the stack's OpenSign-based signing service — client and API built from the bundled source, documents on your own volumes, MongoDB pinned for reliability, identity handled by Cerulean Authentik, and HTTPS terminated at your own edge. It is the portfolio's DocumentOps stopgap, converging into Signara.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/innotelinc/sign-platform#quick-start">Deploy it</a>
+          <a class="btn btn-secondary" href="https://github.com/innotelinc/sign-platform/blob/main/CONVERGENCE.md">Convergence plan</a>
+        </div>
+        <div class="quickstart">
+          <code><span class="c">$</span> git clone https://github.com/innotelinc/sign-platform.git && cd sign-platform && docker compose up -d --build</code>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>Built from source</b><span>no upstream image trust</span></div>
+          <div class="stat"><b>Local documents</b><span>USE_LOCAL on a persistent volume</span></div>
+          <div class="stat"><b>MongoDB 7.0 pinned</b><span>kernel 6.19+ safe, not :latest</span></div>
+          <div class="stat"><b>Edge + SSO</b><span>NPM TLS, Authentik-first identity</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <section id="features">
+      <div class="wrap">
+        <h2>Signing that stays <span class="accent">yours</span>.</h2>
+        <p class="section-sub">The document, the storage and the identity boundary live on your hardware — no vendor object store, no second login, no per-envelope fee.</p>
+        <div class="grid grid-3">
+          <div class="card"><span class="icon" aria-hidden="true">✍️</span><h3>Full signing flows</h3><p>OpenSign web client and API — create, sign and manage documents end to end.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">📦</span><h3>Source-built images</h3><p>Client and server images build from <code>apps/</code> in this repo — the fork is the source of truth.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">💾</span><h3>Documents stay local</h3><p><code>USE_LOCAL=true</code> on the persistent <code>opensign-files</code> volume — files never leave the host.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🍃</span><h3>Pinned database</h3><p>MongoDB 7.0 with healthcheck and persistent storage — pinned against the MongoDB 8.x kernel-6.19 startup failure.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🔐</span><h3>Authentik-first identity</h3><p>NPM-fronted and Cerulean/Authentik-first, like the rest of the portfolio.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🛤️</span><h3>A planned landing</h3><p>A conformant, restorable stopgap with a written convergence path into Signara.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section id="stack">
+      <div class="wrap">
+        <h2>Three services, one <span class="accent">compose</span>.</h2>
+        <p class="section-sub">The whole deployment is a Docker Compose stack behind the estate's Nginx Proxy Manager edge.</p>
+        <div class="split">
+          <div>
+            <div class="grid" style="gap:14px">
+              <div class="card"><span class="icon" aria-hidden="true">🖥️</span><h3>OpenSign client</h3><p>The signing UI, built from the bundled source and routed through the edge.</p></div>
+              <div class="card"><span class="icon" aria-hidden="true">⚙️</span><h3>OpenSign server + API</h3><p>API traffic proxied from <code>/api/app</code> to the internal <code>/app</code> endpoint.</p></div>
+              <div class="card"><span class="icon" aria-hidden="true">🍃</span><h3>MongoDB 7.0</h3><p>Pinned image, persistent volume, startup healthcheck.</p></div>
+            </div>
+          </div>
+          <pre class="terminal"><span class="cmt"># one command from clone to running stack</span>
+$ <span class="p">docker</span> compose up -d --build
+<span class="ok">>> server built from ./apps/OpenSignServer</span>
+<span class="ok">>> client built from ./apps/OpenSign</span>
+<span class="ok">>> mongo 7.0 healthy, volumes attached</span>
+$ <span class="p">curl</span> http://localhost:3000/healthz
+<span class="ok">{"status":"ok"}</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Surfaces -->
+    <section id="surfaces">
+      <div class="wrap">
+        <h2>Where signing lives in the <span class="accent">stack</span>.</h2>
+        <p class="section-sub">Sign Platform is the DocumentOps stopgap; Signara is the strategic e-signature platform. The public surface already answers through Signara.</p>
+        <div class="surfaces">
+          <div class="surface"><b>Signara</b><span class="live">serves sign.innotel.us</span><small>e-signature & agreements — the strategic platform</small></div>
+          <div class="surface"><b>Sign Platform (OpenSign)</b><span class="plan">stopgap · converging</span><small>this repo — deployable OpenSign stack</small></div>
+          <div class="surface"><b>Onyx</b><span class="plan">storage target</span><small>S3-compatible object storage for migrated documents</small></div>
+          <div class="surface"><b>Cerulean Authentik</b><span class="live">identity</span><small>SSO for every signing surface</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Convergence -->
+    <section id="convergence">
+      <div class="wrap">
+        <h2>The convergence <span class="accent">roadmap</span>.</h2>
+        <p class="section-sub">Documented in <a href="https://github.com/innotelinc/sign-platform/blob/main/CONVERGENCE.md">CONVERGENCE.md</a> — from stopgap to strategic platform, with the legacy host retired.</p>
+        <div class="roadmap">
+          <div class="mile"><div class="tag">Signara serves the surface<em>2026-09-15</em></div><p>sign.innotel.us answers through Signara; the old sign-platform host is retired and unreachable.</p><span class="state done">done</span></div>
+          <div class="mile"><div class="tag">Storage cutover<em>Onyx</em></div><p>Documents move from local volumes into Onyx's S3-compatible endpoint; Signara keeps its MinIO client pointed at Onyx.</p><span class="state next">next</span></div>
+          <div class="mile"><div class="tag">Data migration<em>MongoDB → PostgreSQL</em></div><p>Envelopes, signatures and audit history map into Signara's PostgreSQL schema per the migration mapping.</p><span class="state later">planned</span></div>
+          <div class="mile"><div class="tag">Retire the stopgap<em>this repo</em></div><p>Once parity is proven, the OpenSign deployment is archived as the portfolio's fallback signing stack.</p><span class="state later">planned</span></div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap foot-inner">
+      <span>Sign Platform — DocumentOps stopgap, converging into Signara.</span>
+      <div class="foot-links">
+        <a href="https://github.com/innotelinc/sign-platform">Source</a>
+        <a href="https://github.com/innotelinc/sign-platform/blob/main/CONVERGENCE.md">Convergence plan</a>
+        <a href="https://github.com/innotelinc/innotel-platform-stack">Platform stack</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

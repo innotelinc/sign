@@ -1,9 +1,14 @@
 # Sign Platform
 
-[![CI](https://github.com/innotelinc/sign/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/sign/actions/workflows/ci.yml)
+[![CI](https://github.com/innotelinc/sign-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/sign-platform/actions/workflows/ci.yml)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-brightgreen.svg)](LICENSE)
 
-Self-hosted OpenSign deployment for `sign.innotel.us`, using Docker Compose and an external Nginx Proxy Manager instance.
+Self-hosted OpenSign deployment for the Innotel stack, using Docker Compose and an external Nginx Proxy Manager instance.
+
+> **Status: DocumentOps stopgap, converging into Signara.** Signara now serves
+> `sign.innotel.us` (since 2026-09-15); this repo remains the deployable
+> OpenSign fallback while data migrates (MongoDB → PostgreSQL, storage → Onyx).
+> See [CONVERGENCE.md](CONVERGENCE.md) for the plan and the retired-host record.
 
 ## Features
 

@@ -1,9 +1,21 @@
-name: ci
+name: docker
 
-# 👇 add this block
+# Publishes the fork's OpenSign and OpenSignServer images to GHCR
+# (ghcr.io/innotelinc/<image>), using the workflow's built-in GITHUB_TOKEN —
+# no Docker Hub credentials involved.
+#
+# Why not Docker Hub: the upstream workflow pushed to the opensign/*
+# namespaces, which this fork cannot push to even with credentials (the
+# namespaces belong to the upstream org). The estate's docker-compose consumes
+# those same opensign/* tags, so publishing the fork's builds to GHCR under
+# the org namespace keeps the fork's images available without touching
+# upstream's.
+#
+# Triggered on main/staging pushes; multi-arch (amd64 + arm64).
+
 permissions:
-  contents: read        # allow checkout & metadata-action to read repo
-  id-token: write       # needed by docker/metadata-action v4
+  contents: read
+  packages: write
 
 on:
   push:
@@ -17,42 +29,35 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: opensign/opensign
+          - image: innotelinc/opensign
             dockerfile: apps/OpenSign/Dockerhubfile
-          - image: opensign/opensignserver
+          - image: innotelinc/opensignserver
             dockerfile: apps/OpenSignServer/Dockerhubfile
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # 👇 Enable emulation so we can build for arm64 on amd64 runners
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/arm64
 
-      # 👇 Enable Buildx for multi-arch builds
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Login to Docker Hub
+      - name: Login to GHCR
         uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ${{ matrix.image }}
-
-      - name: Debug - List files opensign
-        run: ls -R apps/OpenSign/  # Adjust the path as needed
-
-      - name: Debug - List files opensignserver
-        run: ls -R apps/OpenSignServer/  # Adjust the path as needed  
+          images: ghcr.io/${{ matrix.image }}
 
       - name: Build and push (multi-arch)
         uses: docker/build-push-action@v7
@@ -60,7 +65,8 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          # 👇 Build for both AMD64 & ARM64
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
