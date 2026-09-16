@@ -9,11 +9,13 @@ two of this plan's premises no longer hold:
 - **§2's "stable fallback" no longer exists** — the `sign-platform` host
   (`192.168.1.11`) is unreachable and holds nothing that this host can see. The
   P0 freeze and the dual-read part of P4 are therefore moot, not pending.
-- **The legacy data may not exist anywhere.** The nightly backup script lived
-  only on `.11` (`/usr/local/bin/sign-platform-backup.sh`), was never committed
-  here, and no archive of it exists on this host — so its destination is
-  unrecorded and the P3 ETL is **conditional on recovering a source**. The
-  decision tree is in the roadmap's §6.
+- **The legacy data does not exist, and that is now decided rather than open.**
+  The nightly backup script lived only on `.11`
+  (`/usr/local/bin/sign-platform-backup.sh`), was never committed here, and no
+  archive of it exists anywhere this estate can reach — so its destination was
+  never recorded. A recovery pass on 2026-09-15 (source table in the roadmap's
+  §6) found nothing, and **the history is written off**: no P3 ETL will be
+  written, and the launch note has to say so.
 
 **Owner:** Innotel
 **Repo:** `innotelinc/sign-platform` (this document drives its retirement)
@@ -166,8 +168,8 @@ Notes:
 |-------|-------|---------------|
 | P0 — Freeze | sign-platform is stable fallback; backups of Mongo dump + `opensign-files` volume scheduled | nightly backup verified restorable |
 | P1 — Parity | signara MVP parity checklist: send-for-signature envelope, guest signing flow, templates, completion email, audit trail/certificate, Signara branding, Authentik SSO, SMTP | feature checklist passes on staging |
-| P2 — Onyx | signara storage = onyx-objectstore (dev → prod). **Status: partially blocked** — onyx v0.1 lacks SigV4/presigned URLs (S3-gateway milestone); object store itself deployed and REST-verified | round-trip tests green; presigned public URLs work |
-| P3 — Migration | ETL: Mongo → Postgres, files → Onyx legacy prefix | counts reconcile; spot-check hashes; pilot tenant reads own history in signara |
+| P2 — Onyx | signara storage = onyx-objectstore (dev → prod). **Status: unblocked 2026-09-15** — SigV4 + presigned URLs landed in `services/objectstore/sigv4.go`, verified 6/6 by the storage contract test through a real S3 SDK. What remains is the prod cutover (point the endpoint, copy the objects, demote bundled MinIO) | round-trip tests green; presigned public URLs work |
+| P3 — Migration | ETL: Mongo → Postgres, files → Onyx legacy prefix. **Status: cancelled 2026-09-15** — no source exists (see the header and roadmap §6), so the phase resolves to a recorded write-off rather than pending work | counts reconcile; spot-check hashes; pilot tenant reads own history in signara — *unreachable: the history is gone* |
 | P4 — Cutover | point `sign.innotel.us` at signara; sign-platform scaled down but imageable for 30 days. **Status: edge cut over 2026-09-15** (public URL now serves signara; CORS origin `https://sign.innotel.us` added to the API). sign-platform was never drained first — its host disappeared, so there is no rollback target | signers sign successfully on signara |
 | P5 — Retire | sign-platform archived; repo marked frozen; volumes kept until backup retention elapses | sign-platform containers removed |
 
@@ -203,16 +205,34 @@ Notes:
       location dropped, `CORS_ORIGINS=https://sign.innotel.us` added so the browser
       origin can call `api.signara.innotel.us`. Verified: `200` on `/`, `/login`,
       `/dashboard` with a chain-valid wildcard certificate.
-- [ ] Recover the historical data — the P3 ETL needs the Mongo dump **and** the
-      `opensign-files` volume from `.11`. Re-confirmed 2026-09-15: no ICMP and
-      nothing on `:3000`, `:8080`, `:27017`; no `sign-platform*` container or
-      volume on this host. Timebox the search for an off-host archive, then
-      either write the ETL against it or record the write-off (roadmap §6).
-- [ ] Write the P3 ETL script (`scripts/migrate-sign-platform/`) in the signara
-      repo: Mongo reader → Prisma writer → Onyx uploader + verification report
-      (ETL can use onyx Basic-auth REST today). **Only if §6 finds a source.**
-- [ ] Track/land the onyx S3-gateway (SigV4 + presigned URLs) milestone —
-      re-confirmed 2026-09-15 as still open (`services/objectstore/http.go`).
+- [x] **Recover the historical data — attempted 2026-09-15, written off.**
+      `.11` answers nothing on ICMP, `:3000`, `:8080`, `:27017` **or `:22`**, so
+      it is an address rather than a reachable host; no `mongodump` archive or
+      `opensign-files` tarball exists on this host (filesystem-wide search), no
+      NFS/CIFS mount carries one, and the script that wrote them was never
+      committed — its destination is unrecorded. The documented 14-day retention
+      from the 2026-09-09 run means a surviving archive would have aged out
+      around 2026-09-23 regardless. The full table is in signara `docs/Roadmap.md`
+      §6. **Consequence:** no P3 ETL is written, and Signara owes users an
+      explicit statement that pre-cutover documents are not in it.
+- [x] ~~Write the P3 ETL script~~ — **cancelled, not deferred.** It was
+      conditional on §6 finding a source, and §6 found none. An ETL with no
+      source is a liability rather than progress; the door stays open in the
+      roadmap if an archive turns up.
+- [x] **Land the onyx S3-gateway (SigV4 + presigned URLs) milestone — done
+      2026-09-15.** `services/objectstore/sigv4.go` verifies both the
+      `AWS4-HMAC-SHA256` header form and presigned URLs; `sigv4_test.go` pins the
+      signing-key derivation to the published AWS vector. Verified end to end by
+      running signara's `storage.contract.spec.ts` through minio-js against a
+      standalone `onyx-objectstore`: **6/6**, including fetching a presigned URL
+      the way a browser does. The same pass fixed two protocol gaps it exposed:
+      `HEAD` bucket/object (every SDK probes a bucket before writing) and
+      `x-amz-meta-*` headers, which were being dropped. HTTP Basic is retained so
+      an existing deployment survives the upgrade, and a request that *claims*
+      SigV4 never falls back to it.
+- [ ] **Remaining for storage:** the cutover itself — point `S3_ENDPOINT` at
+      Onyx in production, copy the existing objects, verify against
+      `DocumentVersion.checksumSha256`, then reduce bundled MinIO to dev-only.
 - [ ] Define the signara parity checklist (P1) as GitHub issues in `innotelinc/signara`.
       Draft inventory now lives in `1-primary/signara/docs/Roadmap.md` §W2.
 - [ ] Add `signara/scripts/verify-sso.py` (roadmap W1): the estate's other three
