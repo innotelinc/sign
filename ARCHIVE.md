@@ -121,8 +121,9 @@ Checked before freezing, so the archive carries no live credential:
    dormant: `ghcr.io/innotelinc/opensign` and `…/opensignserver` were republished
    on 2026-09-20 00:37 and 00:47 UTC, i.e. after this repo was documented as
    frozen. The push trigger is removed (manual dispatch only), so a stray commit
-   cannot rebuild them; the workflow stays in the tree as the record. Deleting
-   the two packages is a separate, destructive decision — see §6.
+   cannot rebuild them; the workflow stays in the tree as the record. **The two
+   packages were then deleted** (2026-09-20, §6): nothing in the estate pulls
+   them, and the deployment host holds no image or container from this stack.
    The repository's other publishing workflow, `.github/workflows/pages.yml`
    (the landing page), is gated the same way for a different reason: it has never
    succeeded here — Pages was never enabled for this repository, so every run
@@ -142,8 +143,8 @@ Checked before freezing, so the archive carries no live credential:
 | `sign.innotel.us` | Serves Signara; the legacy `/api/` location pointing at the Parse host is gone | 2026-09-15 (Roadmap §W5) |
 | `sign-platform*` containers, volumes, images | None exist; the host no longer answers on ICMP or `:22/:3000/:8080/:27017` | 2026-09-15 (Roadmap §6) |
 | Legacy `mongodump` archive / `opensign-files` volume | None exist anywhere this estate can reach — written off | 2026-09-15 (Roadmap §6) |
-| Any `*.sign-platform` DNS record or NPM proxy host | Remove if one is found; only the `sign.innotel.us` → Signara host should remain | **Checked 2026-09-20, forward DNS only** — `sign-platform.innotel.us` and `opensign.innotel.us` do not resolve. One stale record found: `api.sign.innotel.us` resolves (to the estate's public WAN address) but the edge presents no certificate for it (`TLS: unrecognized name`), so it is a DNS record without a working proxy host. The proxy-host side cannot be audited from here — no NPM credentials in this estate — so **removing that record is an operator action** (Cerulean/NPM) |
-| Published OpenSign images from this repo's CI (`Docker.yml`) | Do not pull; no longer republished | **Gated 2026-09-20** (§5.4). The two GHCR packages still exist — `innotelinc/opensign` and `innotelinc/opensignserver`, tag `main` — and deleting them is destructive and therefore left to an operator |
+| Any `*.sign-platform` DNS record or NPM proxy host | Remove if one is found; only the `sign.innotel.us` → Signara host should remain | **Closed 2026-09-20** — `sign-platform.innotel.us` and `opensign.innotel.us` do not resolve. The one stale record, `api.sign.innotel.us` (a CNAME to the apex: a name with no certificate and nothing behind it), was **removed through Cerulean's DNS API** and re-checked: it no longer resolves from the estate or from public resolvers, while `sign.innotel.us` still CNAMEs to the apex and serves Signara. The surrounding records are healthy — `auth`, `api`, `app`, `admin` and `storage.signara.innotel.us` resolve to the estate WAN address and are covered by the issued `*.innotel.us` wildcard (expires 2026-12-14) |
+| Published OpenSign images from this repo's CI (`Docker.yml`) | Do not pull; no longer republished | **Gated 2026-09-20** (§5.4) and **deleted 2026-09-20**: `innotelinc/opensign` and `innotelinc/opensignserver` were removed from GHCR after checking that no host runs a container or holds an image from either, and they are absent from the package listing afterwards. Recoverable only by rebuilding from OpenSign upstream |
 | Open Dependabot PRs and their branches | None | **Closed 2026-09-20** — the ten open PRs (opened 2026-09-14, each bumping an OpenSign dependency) were closed, as were the fifteen Dependabot recreated while the repository was unarchived (#21–#30, in two waves); its branches were deleted and the config removed (§3), and none reappeared afterwards. Only `main` remains |
 | `innotelinc.github.io/sign` landing page | Not published; nothing links to it | Never worked: Pages was never enabled for this repository, so every `pages.yml` run failed with `Resource not accessible by integration` (the last on 2026-09-20, from the freeze push). Workflow gated to manual dispatch 2026-09-20 (§5.4). The one thing that *did* treat it as real was this repository's own homepage URL — repointed 2026-09-20 (§7) |
 
