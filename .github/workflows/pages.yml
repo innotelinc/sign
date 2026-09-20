@@ -6,16 +6,19 @@
 # "GitHub Actions" (this workflow also attempts to enable it automatically).
 # After that, every push to main that touches web/landing republishes.
 # workflow_dispatch works too.
+#
+# **Retired 2026-09-20.** The landing page now says the platform is retired, so
+# there is nothing left to publish, and this workflow never once succeeded here:
+# Pages was never enabled for this repository, so every run since 2026-09-15
+# died in "Configure Pages" with `Create Pages site failed — Resource not
+# accessible by integration`. The push trigger is gone for the same reason as
+# Docker.yml's (ARCHIVE.md §5): a frozen repository should not go red on a
+# deploy it cannot perform. Nothing in the estate links to the site — the only
+# reference was this file's own header.
 
 name: GitHub Pages
 
 on:
-  push:
-    # [main, master]: repos default to either branch across the portfolio.
-    branches: [main, master]
-    paths:
-      - "web/landing/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 # Cancel any in-flight publish for the same ref; a Pages deploy is atomic.

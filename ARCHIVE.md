@@ -113,6 +113,12 @@ Checked before freezing, so the archive carries no live credential:
    frozen. The push trigger is removed (manual dispatch only), so a stray commit
    cannot rebuild them; the workflow stays in the tree as the record. Deleting
    the two packages is a separate, destructive decision — see §6.
+   The repository's other publishing workflow, `.github/workflows/pages.yml`
+   (the landing page), is gated the same way for a different reason: it has never
+   succeeded here — Pages was never enabled for this repository, so every run
+   since 2026-09-15 failed in "Configure Pages" with `Resource not accessible by
+   integration` — and a frozen repository should not go red on a deploy it cannot
+   perform. Nothing links to that site (§6).
 5. Confirm nothing in the estate links here except history: this inventory, the
    roadmap's P5 row, and `CONVERGENCE.md` itself. **Done 2026-09-20** — an
    estate-wide search of `distro`, `olympus`, `onyx` and `wintrain` finds no
@@ -128,6 +134,7 @@ Checked before freezing, so the archive carries no live credential:
 | Legacy `mongodump` archive / `opensign-files` volume | None exist anywhere this estate can reach — written off | 2026-09-15 (Roadmap §6) |
 | Any `*.sign-platform` DNS record or NPM proxy host | Remove if one is found; only the `sign.innotel.us` → Signara host should remain | **Checked 2026-09-20, forward DNS only** — `sign-platform.innotel.us` and `opensign.innotel.us` do not resolve. One stale record found: `api.sign.innotel.us` resolves (to the estate's public WAN address) but the edge presents no certificate for it (`TLS: unrecognized name`), so it is a DNS record without a working proxy host. The proxy-host side cannot be audited from here — no NPM credentials in this estate — so **removing that record is an operator action** (Cerulean/NPM) |
 | Published OpenSign images from this repo's CI (`Docker.yml`) | Do not pull; no longer republished | **Gated 2026-09-20** (§5.4). The two GHCR packages still exist — `innotelinc/opensign` and `innotelinc/opensignserver`, tag `main` — and deleting them is destructive and therefore left to an operator |
+| `innotelinc.github.io/sign` landing page | Not published; nothing links to it | Never worked: Pages was never enabled for this repository, so every `pages.yml` run failed with `Resource not accessible by integration` (the last on 2026-09-20, from the freeze push). Workflow gated to manual dispatch 2026-09-20 (§5.4) |
 
 ## 7. Reference audit (2026-09-19)
 
