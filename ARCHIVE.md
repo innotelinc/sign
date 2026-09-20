@@ -134,7 +134,7 @@ Checked before freezing, so the archive carries no live credential:
 | Legacy `mongodump` archive / `opensign-files` volume | None exist anywhere this estate can reach — written off | 2026-09-15 (Roadmap §6) |
 | Any `*.sign-platform` DNS record or NPM proxy host | Remove if one is found; only the `sign.innotel.us` → Signara host should remain | **Checked 2026-09-20, forward DNS only** — `sign-platform.innotel.us` and `opensign.innotel.us` do not resolve. One stale record found: `api.sign.innotel.us` resolves (to the estate's public WAN address) but the edge presents no certificate for it (`TLS: unrecognized name`), so it is a DNS record without a working proxy host. The proxy-host side cannot be audited from here — no NPM credentials in this estate — so **removing that record is an operator action** (Cerulean/NPM) |
 | Published OpenSign images from this repo's CI (`Docker.yml`) | Do not pull; no longer republished | **Gated 2026-09-20** (§5.4). The two GHCR packages still exist — `innotelinc/opensign` and `innotelinc/opensignserver`, tag `main` — and deleting them is destructive and therefore left to an operator |
-| `innotelinc.github.io/sign` landing page | Not published; nothing links to it | Never worked: Pages was never enabled for this repository, so every `pages.yml` run failed with `Resource not accessible by integration` (the last on 2026-09-20, from the freeze push). Workflow gated to manual dispatch 2026-09-20 (§5.4) |
+| `innotelinc.github.io/sign` landing page | Not published; nothing links to it | Never worked: Pages was never enabled for this repository, so every `pages.yml` run failed with `Resource not accessible by integration` (the last on 2026-09-20, from the freeze push). Workflow gated to manual dispatch 2026-09-20 (§5.4). The one thing that *did* treat it as real was this repository's own homepage URL — repointed 2026-09-20 (§7) |
 
 ## 7. Reference audit (2026-09-19)
 
@@ -147,6 +147,7 @@ whether each is a deliberate historical reference:
 | `signara/docs/Roadmap.md`, `sign/CONVERGENCE.md` | the retirement record, the lost-data write-off | Intentional — these are the account of record |
 | `signara/README.md` | "a modern replacement for proprietary e-signature platforms (DocuSign, Adobe Sign, OpenSign)" | Intentional — product positioning, not a dependency |
 | `signara/apps/web/public/locales/*` | `{{appName}}`-style keys, OpenSign key names | Intentional — harvested catalogs, provenance documented in `src/lib/i18n/README.md` |
+| `innotelinc/sign` repository metadata (GitHub, outside the tree) | description read "DocumentOps stopgap **converging into Signara**"; the homepage URL pointed at `innotelinc.github.io/sign/`, the Pages site that was never published | **Fixed 2026-09-20** — the description now says retired and archived, and the homepage points at `innotelinc/signara`. Metadata is not in the tree and an archived repository is read-only, so editing it again means unarchive → edit → re-archive |
 | `distro/`, `olympus/`, `onyx/`, `wintrain/` | none | Clean — no action |
 | `onyx/.tools/gocache/**`, `onyx/.tools/gomod/**` | incidental matches in Go build caches | Not ours — build artefacts, not references |
 
