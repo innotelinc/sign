@@ -82,8 +82,10 @@ copy is a snapshot and must not be used as the source.
   one of its three `directory:` entries (`microfrontends/SignDocuments`) did not
   exist in this tree at all, so that job failed every week. Closing the PRs
   alone does not settle it: they were closed while the repository was briefly
-  unarchived to correct its metadata, and Dependabot opened five replacements
-  inside a minute. Removing the config is what actually stops it.
+  unarchived to correct its metadata, and Dependabot opened fifteen replacements
+  in two waves (#21–#25 within a minute, #26–#30 before the config change took
+  effect) faster than they could be closed, which is what made removing the
+  config the fix rather than a tidy-up.
 
 ## 4. Secrets and keys checked (2026-09-19)
 
@@ -142,7 +144,7 @@ Checked before freezing, so the archive carries no live credential:
 | Legacy `mongodump` archive / `opensign-files` volume | None exist anywhere this estate can reach — written off | 2026-09-15 (Roadmap §6) |
 | Any `*.sign-platform` DNS record or NPM proxy host | Remove if one is found; only the `sign.innotel.us` → Signara host should remain | **Checked 2026-09-20, forward DNS only** — `sign-platform.innotel.us` and `opensign.innotel.us` do not resolve. One stale record found: `api.sign.innotel.us` resolves (to the estate's public WAN address) but the edge presents no certificate for it (`TLS: unrecognized name`), so it is a DNS record without a working proxy host. The proxy-host side cannot be audited from here — no NPM credentials in this estate — so **removing that record is an operator action** (Cerulean/NPM) |
 | Published OpenSign images from this repo's CI (`Docker.yml`) | Do not pull; no longer republished | **Gated 2026-09-20** (§5.4). The two GHCR packages still exist — `innotelinc/opensign` and `innotelinc/opensignserver`, tag `main` — and deleting them is destructive and therefore left to an operator |
-| Open Dependabot PRs and their branches | None | **Closed 2026-09-20** — the 10 open PRs (opened 2026-09-14, each bumping an OpenSign dependency) were closed, the five Dependabot recreated while the repository was unarchived were closed too, its branches were deleted, and the config was removed (§3) so it cannot recreate them |
+| Open Dependabot PRs and their branches | None | **Closed 2026-09-20** — the ten open PRs (opened 2026-09-14, each bumping an OpenSign dependency) were closed, as were the fifteen Dependabot recreated while the repository was unarchived (#21–#30, in two waves); its branches were deleted and the config removed (§3), and none reappeared afterwards. Only `main` remains |
 | `innotelinc.github.io/sign` landing page | Not published; nothing links to it | Never worked: Pages was never enabled for this repository, so every `pages.yml` run failed with `Resource not accessible by integration` (the last on 2026-09-20, from the freeze push). Workflow gated to manual dispatch 2026-09-20 (§5.4). The one thing that *did* treat it as real was this repository's own homepage URL — repointed 2026-09-20 (§7) |
 
 ## 7. Reference audit (2026-09-19)
