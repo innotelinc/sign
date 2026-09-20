@@ -1,12 +1,17 @@
 # Sign Platform in the Innotel Platform Stack
 
-**Role: DocumentOps (stopgap)** — self-hosted e-signature at `sign.innotel.us`.
+**Role: DocumentOps (retired 2026-09-15)** — this platform served
+`sign.innotel.us` and no longer does.
 
-Sign Platform is the live OpenSign fork serving `sign.innotel.us` while
-**Signara** reaches parity. It is a *stopgap*, not a second DocumentOps home:
-the strategic platform is Signara (`innotelinc/signara`), which becomes the
-single e-signature product and takes over this repo's storage role on ONYX. The
-retirement path is tracked in [CONVERGENCE.md](../CONVERGENCE.md).
+Sign Platform was the OpenSign fork that served `sign.innotel.us` while
+**Signara** reached parity. It was a *stopgap*, never a second DocumentOps home:
+Signara (`innotelinc/signara`) is the single e-signature product, it took over
+the public surface on 2026-09-15, and it holds the storage role on ONYX. This
+repository is frozen — see [ARCHIVE.md](../ARCHIVE.md) for the retirement
+inventory and [CONVERGENCE.md](../CONVERGENCE.md) for the migration record.
+
+> **Read the lists below as the historical declaration, not as a live posture.**
+> Nothing in this repository is deployed. Signara owns DocumentOps.
 
 This page declares Sign Platform's role in the
 [**Innotel Platform Stack**](https://github.com/innotelinc/innotel-platform-stack) —
@@ -14,17 +19,18 @@ the canonical single-responsibility architecture. The stack is defined in exactl
 one place; this page links the platform to it and states what it owns, consumes,
 provides, and explicitly does not own.
 
-## Owns
+## Owned (until 2026-09-15)
 
 - The send / sign / complete envelope flow for `sign.innotel.us`
-- The Parse Server + MongoDB deployment that backs it
+- The Parse Server + MongoDB deployment that backed it
 - Local document storage (`opensign-files` volume) until the ONYX cutover
 - Its own signing certificate (`PFX_BASE64` / `PASS_PHRASE`)
 
-## Provides
+## Provided (until 2026-09-15)
 
 - A working e-signature surface during the Signara migration window
-- A stable, restorable fallback while Signara reaches feature parity
+- A fallback that stopped being reachable when its host went away — which is why
+  the cutover was not run as a rollback-capable change (CONVERGENCE.md §2)
 
 ## Consumes
 
@@ -60,15 +66,18 @@ provides, and explicitly does not own.
 | Secrets | Cerulean Vault (SecretOps, KV v2) → references in `.env.prod`; never committed |
 | Trust | Cerulean issues DNS + per-zone wildcard TLS; NPM Edge fronts `sign.innotel.us` |
 | Revenue | Magnate plans/entitlements gate paid signing seats (optional) |
-| Storage | ONYX receives the migrated documents under `legacy/sign-platform/` |
+| Storage | ONYX holds Signara's documents; no `legacy/sign-platform/` prefix was ever populated — there was no source to migrate (Roadmap §6) |
 | Source of truth | This repository's `docs/stack.md` points back to the Innotel Platform Stack |
 
-## Retirement
+## Retirement — done
 
-[CONVERGENCE.md](../CONVERGENCE.md) drives this repository's retirement: Signara
-becomes the single e-signature product, documents migrate to ONYX under
-`legacy/sign-platform/`, and `sign.innotel.us` moves to Signara. Until then this
-stack stays conformant so it remains a clean, auditable fallback.
+[CONVERGENCE.md](../CONVERGENCE.md) drove this repository's retirement and it is
+complete: Signara is the single e-signature product, it serves `sign.innotel.us`,
+and its documents live in ONYX. The legacy history was never migrated — the only
+copy sat on a host that no longer exists, and the recovery attempt found nothing
+(Roadmap §6), so it is a recorded write-off rather than pending work. The
+remaining step is administrative: freeze this repository per
+[ARCHIVE.md](../ARCHIVE.md).
 
 Back to the canonical definition: the
 [Innotel Platform Stack](https://github.com/innotelinc/innotel-platform-stack).

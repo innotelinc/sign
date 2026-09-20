@@ -11,17 +11,21 @@ name: docker
 # the org namespace keeps the fork's images available without touching
 # upstream's.
 #
-# Triggered on main/staging pushes; multi-arch (amd64 + arm64).
+# **Retired 2026-09-20.** This repository is frozen (see ARCHIVE.md): the images
+# it publishes must not be pulled, and the stack they came from no longer exists.
+# The push trigger is gone so a stray commit cannot rebuild or republish them —
+# it fired as recently as 2026-09-20 00:37 UTC, after the retirement was
+# documented. Manual dispatch remains, for the unlikely case that the fork is
+# revived deliberately; if you are reaching for it, read ARCHIVE.md first.
+#
+# Originally: triggered on main/staging pushes; multi-arch (amd64 + arm64).
 
 permissions:
   contents: read
   packages: write
 
 on:
-  push:
-    branches:
-      - 'main'
-      - 'staging'
+  workflow_dispatch:
 
 jobs:
   docker:

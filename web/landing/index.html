@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign Platform — Open-source e-signature, self-hosted</title>
-  <meta name="description" content="Sign Platform is the Innotel stack's OpenSign-based signing service: documents built from source, stored on your own volumes, fronted by your own edge — converging into Signara.">
-  <meta property="og:title" content="Sign Platform — Open-source e-signature, self-hosted">
-  <meta property="og:description" content="Self-hosted OpenSign: unlimited signing, local document storage, MongoDB pinned for reliability, Authentik-first identity — the DocumentOps stopgap converging into Signara.">
+  <title>Sign Platform (retired) — archived OpenSign deployment</title>
+  <meta name="description" content="Sign Platform was the Innotel stack's OpenSign-based signing service until 2026-09-15, when sign.innotel.us moved to Signara. The repository is archived as the historical record.">
+  <meta property="og:title" content="Sign Platform (retired) — archived OpenSign deployment">
+  <meta property="og:description" content="A self-hosted OpenSign deployment, retired 2026-09-15: sign.innotel.us is served by Signara, and this repository is frozen as the historical record of the migration.">
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2360a5fa'/%3E%3Cpath fill='%230b0d10' d='M18 44c6-2 10-6 12-12l3-9 3 9c2 6 6 10 12 12-6 2-10 6-12 12l-3 9-3-9c-2-6-6-10-12-12z'/%3E%3C/svg%3E">
   <style>
@@ -297,18 +297,26 @@
   </header>
 
   <main>
+    <!-- Retirement notice -->
+    <div class="wrap" style="margin-top:24px">
+      <p class="kicker" style="margin:0;padding:12px 16px;border:1px solid var(--p-border);border-radius:10px;background:var(--p-bg-elevated)">
+        Retired 2026-09-15 &mdash; archived. <code>sign.innotel.us</code> is served by Signara; nothing in this repository is deployed.
+        <a href="https://github.com/innotelinc/sign/blob/main/ARCHIVE.md">Retirement inventory</a>
+      </p>
+    </div>
+
     <!-- Hero -->
     <div class="hero">
       <div class="wrap hero-inner">
         <p class="kicker">DocumentOps · OpenSign, built from source</p>
         <h1>Every signature stays on <span class="accent">your infrastructure</span>.</h1>
-        <p class="lede">Sign Platform is the stack's OpenSign-based signing service — client and API built from the bundled source, documents on your own volumes, MongoDB pinned for reliability, identity handled by Cerulean Authentik, and HTTPS terminated at your own edge. It is the portfolio's DocumentOps stopgap, converging into Signara.</p>
+        <p class="lede">Sign Platform was the stack's OpenSign-based signing service — client and API built from the bundled source, documents on your own volumes, MongoDB pinned for reliability, identity handled by Cerulean Authentik, and HTTPS terminated at your own edge. It served the public surface until 2026-09-15 and is now retired: the DocumentOps platform is Signara.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="https://github.com/innotelinc/sign#quick-start">Deploy it</a>
-          <a class="btn btn-secondary" href="https://github.com/innotelinc/sign/blob/main/CONVERGENCE.md">Convergence plan</a>
+          <a class="btn btn-primary" href="https://github.com/innotelinc/signara">Signara &mdash; the platform that replaced it</a>
+          <a class="btn btn-secondary" href="https://github.com/innotelinc/sign/blob/main/ARCHIVE.md">Retirement inventory</a>
         </div>
         <div class="quickstart">
-          <code><span class="c">$</span> git clone https://github.com/innotelinc/sign.git && cd sign && docker compose up -d --build</code>
+          <code><span class="c">#</span> retired 2026-09-15 &mdash; this repository is frozen; do not deploy it</code>
         </div>
         <div class="stats">
           <div class="stat"><b>Built from source</b><span>no upstream image trust</span></div>
@@ -330,7 +338,7 @@
           <div class="card"><span class="icon" aria-hidden="true">💾</span><h3>Documents stay local</h3><p><code>USE_LOCAL=true</code> on the persistent <code>opensign-files</code> volume — files never leave the host.</p></div>
           <div class="card"><span class="icon" aria-hidden="true">🍃</span><h3>Pinned database</h3><p>MongoDB 7.0 with healthcheck and persistent storage — pinned against the MongoDB 8.x kernel-6.19 startup failure.</p></div>
           <div class="card"><span class="icon" aria-hidden="true">🔐</span><h3>Authentik-first identity</h3><p>NPM-fronted and Cerulean/Authentik-first, like the rest of the portfolio.</p></div>
-          <div class="card"><span class="icon" aria-hidden="true">🛤️</span><h3>A planned landing</h3><p>A conformant, restorable stopgap with a written convergence path into Signara.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🏁</span><h3>Retired, with a record</h3><p>The convergence path into Signara was executed; the inventory says what was carried out and what was left behind.</p></div>
         </div>
       </div>
     </section>
@@ -363,11 +371,11 @@ $ <span class="p">curl</span> http://localhost:3000/healthz
     <section id="surfaces">
       <div class="wrap">
         <h2>Where signing lives in the <span class="accent">stack</span>.</h2>
-        <p class="section-sub">Sign Platform is the DocumentOps stopgap; Signara is the strategic e-signature platform. The public surface already answers through Signara.</p>
+        <p class="section-sub">Signara is the ecosystem's DocumentOps platform and has served the public surface since 2026-09-15. Sign Platform is retired alongside the host it ran on.</p>
         <div class="surfaces">
-          <div class="surface"><b>Signara</b><span class="live">serves sign.innotel.us</span><small>e-signature & agreements — the strategic platform</small></div>
-          <div class="surface"><b>Sign Platform (OpenSign)</b><span class="plan">stopgap · converging</span><small>this repo — deployable OpenSign stack</small></div>
-          <div class="surface"><b>Onyx</b><span class="plan">storage target</span><small>S3-compatible object storage for migrated documents</small></div>
+          <div class="surface"><b>Signara</b><span class="live">serves sign.innotel.us</span><small>e-signature & agreements — the DocumentOps platform</small></div>
+          <div class="surface"><b>Sign Platform (OpenSign)</b><span class="plan">retired · archived</span><small>this repo — frozen historical record</small></div>
+          <div class="surface"><b>Onyx</b><span class="live">storage</span><small>S3-compatible object storage holding Signara's documents</small></div>
           <div class="surface"><b>Cerulean Authentik</b><span class="live">identity</span><small>SSO for every signing surface</small></div>
         </div>
       </div>
@@ -380,9 +388,9 @@ $ <span class="p">curl</span> http://localhost:3000/healthz
         <p class="section-sub">Documented in <a href="https://github.com/innotelinc/sign/blob/main/CONVERGENCE.md">CONVERGENCE.md</a> — from stopgap to strategic platform, with the legacy host retired.</p>
         <div class="roadmap">
           <div class="mile"><div class="tag">Signara serves the surface<em>2026-09-15</em></div><p>sign.innotel.us answers through Signara; the old sign-platform host is retired and unreachable.</p><span class="state done">done</span></div>
-          <div class="mile"><div class="tag">Storage cutover<em>Onyx</em></div><p>Documents move from local volumes into Onyx's S3-compatible endpoint; Signara keeps its MinIO client pointed at Onyx.</p><span class="state next">next</span></div>
-          <div class="mile"><div class="tag">Data migration<em>MongoDB → PostgreSQL</em></div><p>Envelopes, signatures and audit history map into Signara's PostgreSQL schema per the migration mapping.</p><span class="state later">planned</span></div>
-          <div class="mile"><div class="tag">Retire the stopgap<em>this repo</em></div><p>Once parity is proven, the OpenSign deployment is archived as the portfolio's fallback signing stack.</p><span class="state later">planned</span></div>
+          <div class="mile"><div class="tag">Storage cutover<em>2026-09-15</em></div><p>Signara's documents were migrated into Onyx's S3-compatible endpoint and hash-verified; bundled MinIO was demoted to a rollback profile and stopped.</p><span class="state done">done</span></div>
+          <div class="mile"><div class="tag">Data migration<em>written off</em></div><p>The legacy history was never migrated: the only copy sat on a host that no longer exists, and the recovery attempt found nothing. Pre-cutover documents are not in Signara.</p><span class="state done">decided</span></div>
+          <div class="mile"><div class="tag">Retire the stopgap<em>this repo</em></div><p>The OpenSign deployment is archived as the historical record, with an inventory of what was harvested before the freeze.</p><span class="state done">done</span></div>
         </div>
       </div>
     </section>
@@ -390,7 +398,7 @@ $ <span class="p">curl</span> http://localhost:3000/healthz
 
   <footer>
     <div class="wrap foot-inner">
-      <span>Sign Platform — DocumentOps stopgap, converging into Signara.</span>
+      <span>Sign Platform — retired 2026-09-15, archived as the historical record. DocumentOps is Signara.</span>
       <div class="foot-links">
         <a href="https://github.com/innotelinc/sign">Source</a>
         <a href="https://github.com/innotelinc/sign/blob/main/CONVERGENCE.md">Convergence plan</a>

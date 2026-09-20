@@ -20,6 +20,12 @@ two of this plan's premises no longer hold:
 **Owner:** Innotel
 **Repo:** `innotelinc/sign` (renamed from `sign-platform`; this document drives its retirement)
 
+The retirement itself is carried out and recorded in [ARCHIVE.md](ARCHIVE.md) —
+that inventory owns the harvest (what was carried out of the fork, and what was
+left behind deliberately), the freeze steps and the estate-side decommission
+checklist. Read it alongside this document rather than the phase table below,
+which is history.
+
 ---
 
 ## 1. Executive summary

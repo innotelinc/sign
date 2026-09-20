@@ -5,10 +5,14 @@
 
 Self-hosted OpenSign deployment for the Innotel stack, using Docker Compose and an external Nginx Proxy Manager instance.
 
-> **Status: DocumentOps stopgap, converging into Signara.** Signara now serves
-> `sign.innotel.us` (since 2026-09-15); this repo remains the deployable
-> OpenSign fallback while data migrates (MongoDB → PostgreSQL, storage → Onyx).
-> See [CONVERGENCE.md](CONVERGENCE.md) for the plan and the retired-host record.
+> **Status: archived — this DocumentOps stopgap has been retired.** Since
+> 2026-09-15 `sign.innotel.us` is served by **Signara** (`innotelinc/signara`),
+> which is where storage and signing now live. Because the old host no longer
+> exists, the legacy history was written off rather than migrated. This
+> repository is **frozen as the historical record**: nothing here is deployed,
+> and it is *not* a fallback to fail over to. See [ARCHIVE.md](ARCHIVE.md) for the
+> inventory of what was carried out of it, and [CONVERGENCE.md](CONVERGENCE.md)
+> for the migration and retirement record.
 
 ## Features
 
@@ -35,7 +39,7 @@ Self-hosted OpenSign deployment for the Innotel stack, using Docker Compose and 
 | Signing runs on somebody else's servers | Self-hosted OpenSign stack on your own host, behind your own edge |
 | Documents stranded in a vendor's object store | `USE_LOCAL=true` on a persistent `opensign-files` volume, with the ONYX cutover planned |
 | Identity as a second login | NPM-fronted and Cerulean/Authentik-first, like the rest of the portfolio |
-| An unverifiable migration | A conformant, restorable stopgap while Signara reaches parity (`CONVERGENCE.md`) |
+| A migration that cannot be verified | Recorded as a write-off rather than left ambiguous — no wording here or elsewhere promises the old envelopes are in Signara (`ARCHIVE.md` §8) |
 
 ## Quick start
 
@@ -127,13 +131,14 @@ This project packages deployment configuration around [OpenSign](https://github.
 
 | Document | Purpose |
 | --- | --- |
-| [docs/stack.md](docs/stack.md) | Sign Platform's role in the Innotel Platform Stack (DocumentOps) |
-| [CONVERGENCE.md](CONVERGENCE.md) | The Signara migration plan that retires this stack |
+| [ARCHIVE.md](ARCHIVE.md) | The retirement inventory: what was harvested, what to freeze and decommission |
+| [docs/stack.md](docs/stack.md) | Sign Platform's (historical) role in the Innotel Platform Stack |
+| [CONVERGENCE.md](CONVERGENCE.md) | The Signara migration plan that retired this stack |
 | [NGINX_PROXY_MANAGER.md](NGINX_PROXY_MANAGER.md) | Complete proxy, DNS, and firewall setup |
 
 ## 🏛️ Platform stack
 
-Sign Platform is the ecosystem's **DocumentOps** stopgap in the
+Sign Platform was the ecosystem's **DocumentOps** stopgap in the
 [**Innotel Platform Stack**](https://github.com/innotelinc/innotel-platform-stack) —
 the canonical single-responsibility architecture where Authentik owns identity,
 Cerulean Vault owns secrets, Cerulean owns trust, ONYX owns storage, Magnate owns
